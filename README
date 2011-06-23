@@ -1,0 +1,1 @@
+This is a quick implementation of QuineMcCluskey which is used to minimize terms in a boolean function. The current state of this code is in desparate need of refactoring, but it does what I need for now :)
