@@ -3,10 +3,9 @@ package com.kevlindev.karnaugh;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Function {
+public class Function extends MinTermList {
 	private String name;
 	private List<String> arguments;
-	private List<MinTerm> minterms;
 	private int bits;
 
 	/**
@@ -54,20 +53,11 @@ public class Function {
 	public List<Integer> getMinTermIndexes() {
 		List<Integer> result = new ArrayList<Integer>();
 
-		for (MinTerm term : minterms) {
+		for (MinTerm term : this) {
 			result.addAll(term.getIndexes());
 		}
 
 		return result;
-	}
-
-	/**
-	 * getValues
-	 * 
-	 * @return
-	 */
-	public List<MinTerm> getMinTerms() {
-		return this.minterms;
 	}
 
 	/**
@@ -86,11 +76,10 @@ public class Function {
 	 */
 	public void setValues(List<TruthValue> values) {
 		int index = 0;
-		this.minterms = new ArrayList<MinTerm>();
 
 		for (TruthValue value : values) {
 			if (value == TruthValue.TRUE) {
-				minterms.add(new MinTerm(bits, index));
+				this.add(new MinTerm(bits, index));
 			}
 
 			index++;
@@ -102,9 +91,9 @@ public class Function {
 
 		sb.append(name).append("(").append(Util.join(",", arguments)).append(") = ");
 
-		List<String> values = new ArrayList<String>(this.minterms.size());
+		List<String> values = new ArrayList<String>(this.size());
 
-		for (MinTerm minterm : minterms) {
+		for (MinTerm minterm : this) {
 			int index = minterm.getIndexes().get(0);
 
 			values.add(Integer.toString(index));
