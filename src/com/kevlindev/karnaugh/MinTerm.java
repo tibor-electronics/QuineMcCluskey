@@ -1,6 +1,7 @@
 package com.kevlindev.karnaugh;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MinTerm {
@@ -32,6 +33,24 @@ public class MinTerm {
 		}
 
 		return count;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		boolean result = false;
+
+		if (obj instanceof MinTerm) {
+			MinTerm other = (MinTerm) obj;
+
+			result = indexes.equals(other.indexes) && bits.equals(other.bits);
+		}
+
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		return indexes.hashCode() ^ bits.hashCode();
 	}
 
 	/**
@@ -71,7 +90,7 @@ public class MinTerm {
 				if (count > 1) {
 					break;
 				}
-				
+
 				mergedBits.add(TruthValue.UNDEFINED);
 			} else {
 				mergedBits.add(bits.get(i));
@@ -83,6 +102,8 @@ public class MinTerm {
 
 			indexes.addAll(this.indexes);
 			indexes.addAll(term.indexes);
+
+			Collections.sort(indexes);
 
 			result = new MinTerm(indexes, mergedBits);
 		}
