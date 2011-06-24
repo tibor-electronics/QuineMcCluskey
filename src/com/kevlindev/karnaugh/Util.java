@@ -1,6 +1,5 @@
 package com.kevlindev.karnaugh;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -26,27 +25,37 @@ public class Util {
 
 		return buffer.toString();
 	}
-	
+
+	/**
+	 * Create a new string that is the result of repeating another string a
+	 * specified number of times
+	 * 
+	 * @param text
+	 * @param count
+	 * @return
+	 */
 	public static String repeat(String text, int count) {
 		StringBuilder buffer = new StringBuilder();
-		
-		for (int i = 0; i < count; i++) {
-			buffer.append(text);
+
+		if (text != null && text.length() > 0 && count > 0) {
+			for (int i = 0; i < count; i++) {
+				buffer.append(text);
+			}
 		}
-		
+
 		return buffer.toString();
 	}
 
-	public static List<List<MinTerm>> partitionMinTerms(int bits, Collection<MinTerm> minterms) {
-		List<List<MinTerm>> result = new ArrayList<List<MinTerm>>();
+	public static Partitions partitionMinTerms(int bits, Collection<MinTerm> minterms) {
+		Partitions result = new Partitions();
 
 		for (int i = 0; i <= bits; i++) {
-			result.add(new ArrayList<MinTerm>());
+			result.add(new MinTermList());
 		}
 
 		for (MinTerm minterm : minterms) {
 			int index = minterm.getBitCount();
-			List<MinTerm> partition = result.get(index);
+			MinTermList partition = result.get(index);
 
 			partition.add(minterm);
 		}
