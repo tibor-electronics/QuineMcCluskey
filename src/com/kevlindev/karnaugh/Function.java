@@ -36,7 +36,7 @@ public class Function {
 	public int getBits() {
 		return bits;
 	}
-	
+
 	/**
 	 * getName
 	 * 
@@ -44,6 +44,21 @@ public class Function {
 	 */
 	public String getName() {
 		return this.name;
+	}
+
+	/**
+	 * getMinTermIndexes
+	 * 
+	 * @return
+	 */
+	public List<Integer> getMinTermIndexes() {
+		List<Integer> result = new ArrayList<Integer>();
+
+		for (MinTerm term : minterms) {
+			result.addAll(term.getIndexes());
+		}
+
+		return result;
 	}
 
 	/**
@@ -77,7 +92,7 @@ public class Function {
 			if (value == TruthValue.TRUE) {
 				minterms.add(new MinTerm(bits, index));
 			}
-			
+
 			index++;
 		}
 	}
@@ -91,7 +106,7 @@ public class Function {
 
 		for (MinTerm minterm : minterms) {
 			int index = minterm.getIndexes().get(0);
-			
+
 			values.add(Integer.toString(index));
 		}
 
