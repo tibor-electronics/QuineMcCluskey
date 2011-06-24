@@ -9,40 +9,49 @@ import java.util.List;
 import java.util.Set;
 
 public class Partitions implements Iterable<MinTermList> {
-	public static final Comparator<String> IMPLICANT_COMPARATOR = new Comparator<String>() {
-		@Override
-		public int compare(String arg0, String arg1) {
-			int result = 0;
-
-			for (int i = 0; i < arg0.length(); i++) {
-				char c1 = arg0.charAt(i);
-				char c2 = arg1.charAt(i);
-
-				if (c1 != c2) {
-					// do nothing
-					if (c1 == '-') {
-						result = 1;
-					} else if (c2 == '-') {
-						result = -1;
-					} else if (c1 == '0') {
-						result = -1;
-					} else if (c2 == '1') {
-						result = 1;
-					}
-					break;
-				}
-			}
-
-			return result;
-		}
-	};
-
 	private List<MinTermList> partitions = new ArrayList<MinTermList>();
 
+	/**
+	 * Add a new MinTermList to this collection
+	 * 
+	 * @param terms
+	 */
 	public void add(MinTermList terms) {
 		partitions.add(terms);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		boolean match = false;
+
+		if (obj instanceof Partitions) {
+			Partitions other = (Partitions) obj;
+
+			if (size() == other.size()) {
+				match = true;
+
+				for (int i = 0; i < size(); i++) {
+					if (partitions.get(i).equals(other.partitions.get(i)) == false) {
+						match = false;
+						break;
+					}
+				}
+			}
+		}
+
+		return match;
+	}
+
+	/**
+	 * Create a unique set of all MinTerms contained within this collection
+	 * 
+	 * @return
+	 */
 	public Set<MinTerm> flatten() {
 		Set<MinTerm> result = new HashSet<MinTerm>();
 
@@ -53,35 +62,48 @@ public class Partitions implements Iterable<MinTermList> {
 		return result;
 	}
 
+	/**
+	 * Return the MinTermList at the specified index
+	 * 
+	 * @param index
+	 * @return
+	 */
 	public MinTermList get(int index) {
 		return partitions.get(index);
 	}
 
-	// TODO: bad name here
-	public List<String> getPrimeImplicants() {
-		Set<String> primeImplicantSet = new HashSet<String>();
-
-		for (MinTermList partition : partitions) {
-			for (MinTerm term : partition) {
-				primeImplicantSet.add(Util.join("", term.getBits()));
-			}
-		}
-
-		ArrayList<String> primeImplicants = new ArrayList<String>(primeImplicantSet);
-		Collections.sort(primeImplicants, IMPLICANT_COMPARATOR);
-
-		return primeImplicants;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return partitions.hashCode();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Iterable#iterator()
+	 */
 	@Override
 	public Iterator<MinTermList> iterator() {
 		return partitions.iterator();
 	}
 
+	/**
+	 * Return the number of MinTermLists in this collection
+	 * 
+	 * @return
+	 */
 	public int size() {
 		return partitions.size();
 	}
 
+	/**
+	 * Sort the list of MinTermLists, shortest first, then by fewest states
+	 */
 	public void sort() {
 		Collections.sort(partitions, new Comparator<MinTermList>() {
 			@Override
@@ -107,7 +129,12 @@ public class Partitions implements Iterable<MinTermList> {
 			}
 		});
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
 
