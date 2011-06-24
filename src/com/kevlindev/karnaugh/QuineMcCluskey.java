@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -13,6 +12,8 @@ import java.util.Set;
 public class QuineMcCluskey {
 
 	/**
+	 * main
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -25,6 +26,13 @@ public class QuineMcCluskey {
 		}
 	}
 
+	/**
+	 * getEssentialPrimeImplicants
+	 * 
+	 * @param f
+	 * @param partitions
+	 * @return
+	 */
 	private Partitions getEssentialPrimeImplicants(Function f, Partitions partitions) {
 		Set<Integer> indexes = new HashSet<Integer>(f.getMinTermIndexes());
 		Partitions solutions = new Partitions();
@@ -77,96 +85,41 @@ public class QuineMcCluskey {
 	}
 
 	/**
-	 * getMinimizedFunction
-	 * 
-	 * @param f
-	 * @param primeImplicants
-	 * @return
-	 */
-	private String getMinimizedFunction(Function f, List<String> primeImplicants) {
-		List<String> products = new ArrayList<String>();
-		List<String> arguments = f.getArguments();
-
-		for (String primeImplicant : primeImplicants) {
-			List<String> sums = new ArrayList<String>();
-
-			for (int i = 0; i < arguments.size(); i++) {
-				char c = primeImplicant.charAt(i);
-
-				switch (c) {
-				case '0':
-					sums.add("~" + arguments.get(i));
-					break;
-
-				case '1':
-					sums.add(arguments.get(i));
-					break;
-				}
-			}
-
-			products.add(Util.join(" & ", sums));
-		}
-
-		return f.getName() + " = " + Util.join(" | ", products);
-	}
-
-	/**
-	 * minimize
+	 * Minimize the functions listed in teh specified file
 	 * 
 	 * @param file
 	 */
 	public void minimize(String file) {
+		// load the function from the specified file
 		Function f = readFile(file);
+
+		// partition the minterms, grouped by 1-bit counts
 		Partitions partitions = Util.partitionMinTerms(f.getBits(), f.getMinTerms());
 
-		System.out.println("Initial Partitions");
-		System.out.println("==================");
-		System.out.println(partitions);
-
-		// TODO: loop until no change
-		for (int i = 0;; i++) {
+		// loop until no change
+		while (true) {
+			// merge minterms that differ by only 1 bit and repartition
 			Partitions newPartitions = reducePartitions(partitions);
-			boolean match = true;
-			
-			for (int j = 0; j < newPartitions.size(); j++) {
-				if (newPartitions.get(j).equals(partitions.get(j)) == false) {
-					match = false;
-					break;
-				}
-			}
-			
-			if (match) {
+
+			// quit if we ended up with the same partitions as before
+			if (newPartitions.equals(partitions)) {
 				break;
 			} else {
-				System.out.println();
-				System.out.println("Pass " + (i + 1));
-				System.out.println("======");
-				System.out.println(partitions);
-				
 				partitions = newPartitions;
 			}
 		}
 
-		List<String> primeImplicants = partitions.getPrimeImplicants();
+		// get a list of solutions that equal the original function
 		Partitions solutions = getEssentialPrimeImplicants(f, partitions);
 
-		printSection("Function", f.toString());
-		printSection("Prime Implicants", Util.join(", ", primeImplicants));
-		System.out.println();
-		System.out.println("Essential Prime Implicants");
-		System.out.println("==========================");
-		System.out.println(solutions);
-
 		if (solutions != null && solutions.size() > 0) {
+			// grab shortest (best) solution
 			MinTermList solution = solutions.get(0);
-			List<String> essentialPrimeImplicants = new ArrayList<String>();
-			for (MinTerm term : solution) {
-				essentialPrimeImplicants.add(Util.join("", term.getBits()));
-			}
-			Collections.sort(essentialPrimeImplicants, Partitions.IMPLICANT_COMPARATOR);
-			printSection("Minimized Function", getMinimizedFunction(f, essentialPrimeImplicants));
+
+			printSection("Function", f.toString());
+			printSection("Minimized Function", f.toFunctionString(solution));
 		} else {
-			System.out.println("No solution found. This most likely indicates an error condition in this application.");
+			System.out.println("No solution was found, most likely indicating a fault in this application.");
 		}
 	}
 
@@ -177,10 +130,10 @@ public class QuineMcCluskey {
 	 * @param content
 	 */
 	private void printSection(String header, String content) {
-		System.out.println();
 		System.out.println(header);
-		System.out.println(Util.repeat("=", header.length()));
+		System.out.println(Util.repeat("-", header.length()));
 		System.out.println(content);
+		System.out.println();
 	}
 
 	/**
