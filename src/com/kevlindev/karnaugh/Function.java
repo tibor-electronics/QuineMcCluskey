@@ -37,15 +37,6 @@ public class Function extends MinTermList {
 	}
 
 	/**
-	 * getName
-	 * 
-	 * @return
-	 */
-	public String getName() {
-		return this.name;
-	}
-
-	/**
 	 * getMinTermIndexes
 	 * 
 	 * @return
@@ -58,6 +49,15 @@ public class Function extends MinTermList {
 		}
 
 		return result;
+	}
+
+	/**
+	 * getName
+	 * 
+	 * @return
+	 */
+	public String getName() {
+		return this.name;
 	}
 
 	/**
@@ -86,6 +86,47 @@ public class Function extends MinTermList {
 		}
 	}
 
+	/**
+	 * toFunctionString
+	 * 
+	 * @param terms
+	 * @return
+	 */
+	public String toFunctionString(MinTermList terms) {
+		List<String> products = new ArrayList<String>();
+
+		terms.sort();
+
+		for (MinTerm term : terms) {
+			List<String> sums = new ArrayList<String>();
+			List<TruthValue> values = term.getBits();
+
+			for (int i = 0; i < values.size(); i++) {
+				TruthValue value = values.get(i);
+				String argument = arguments.get(i);
+
+				switch (value) {
+					case FALSE:
+						sums.add("~" + argument);
+						break;
+
+					case TRUE:
+						sums.add(argument);
+						break;
+				}
+			}
+
+			products.add(Util.join(" & ", sums));
+		}
+
+		return name + " = " + Util.join(" | ", products);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
