@@ -38,9 +38,10 @@ public class Minimizer {
 		Partitions solutions = new Partitions();
 
 		List<MinTerm> allTerms = new ArrayList<MinTerm>(partitions.flatten());
-		boolean[] selectors = new boolean[allTerms.size()];
+		SelectionIterator iterator = new SelectionIterator(allTerms.size());
 
-		while (true) {
+		while (iterator.hasNext()) {
+			boolean[] selectors = iterator.next();
 			Set<Integer> candidate = new HashSet<Integer>();
 			MinTermList terms = new MinTermList();
 
@@ -55,27 +56,6 @@ public class Minimizer {
 				// TODO: keep track of best solution instead of collecting all
 				// solutions
 				solutions.add(terms);
-			}
-
-			// TODO: make this into an iterator
-			// increment the selector, with carries
-			int i;
-			
-			for (i = 0; i < selectors.length; i++) {
-				if (selectors[i] == false) {
-					// no carry, so we can stop
-					selectors[i] = true;
-					break;
-				} else {
-					// carry, so propagate that
-					selectors[i] = false;
-				}
-			}
-
-			// if 'i' is the length of the selector list, then we wrapped all
-			// the way around and are done
-			if (i == selectors.length) {
-				break;
 			}
 		}
 
