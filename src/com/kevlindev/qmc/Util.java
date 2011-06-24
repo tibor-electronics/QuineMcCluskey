@@ -62,4 +62,11 @@ public class Util {
 
 		return result;
 	}
+	
+	public static void printSection(String header, String content) {
+		System.out.println(header);
+		System.out.println(Util.repeat("-", header.length()));
+		System.out.println(content);
+		System.out.println();
+	}
 }

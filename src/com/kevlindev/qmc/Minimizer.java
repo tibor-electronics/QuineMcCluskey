@@ -97,24 +97,11 @@ public class Minimizer {
 			// grab shortest (best) solution
 			MinTermList solution = solutions.get(0);
 
-			printSection("Function", f.toString());
-			printSection("Minimized Function", f.toFunctionString(solution));
+			Util.printSection("Function", f.toString());
+			Util.printSection("Minimized Function", f.toFunctionString(solution));
 		} else {
 			System.out.println("No solution was found, most likely indicating a fault in this application.");
 		}
-	}
-
-	/**
-	 * printSection
-	 * 
-	 * @param header
-	 * @param content
-	 */
-	private void printSection(String header, String content) {
-		System.out.println(header);
-		System.out.println(Util.repeat("-", header.length()));
-		System.out.println(content);
-		System.out.println();
 	}
 
 	/**
