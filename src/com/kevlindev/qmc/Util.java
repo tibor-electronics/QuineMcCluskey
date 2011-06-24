@@ -1,4 +1,4 @@
-package com.kevlindev.karnaugh;
+package com.kevlindev.qmc;
 
 import java.util.Arrays;
 import java.util.Collection;

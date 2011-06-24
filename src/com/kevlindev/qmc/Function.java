@@ -1,4 +1,4 @@
-package com.kevlindev.karnaugh;
+package com.kevlindev.qmc;
 
 import java.util.ArrayList;
 import java.util.List;

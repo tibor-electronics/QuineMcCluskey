@@ -1,4 +1,4 @@
-package com.kevlindev.karnaugh;
+package com.kevlindev.qmc;
 
 public enum TruthValue {
 	UNDEFINED("-"), FALSE("0"), TRUE("1");

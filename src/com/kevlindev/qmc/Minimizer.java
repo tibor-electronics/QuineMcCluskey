@@ -1,4 +1,4 @@
-package com.kevlindev.karnaugh;
+package com.kevlindev.qmc;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
-public class QuineMcCluskey {
+public class Minimizer {
 
 	/**
 	 * main
@@ -18,7 +18,7 @@ public class QuineMcCluskey {
 	 */
 	public static void main(String[] args) {
 		if (args != null && args.length > 0) {
-			QuineMcCluskey minimizer = new QuineMcCluskey();
+			Minimizer minimizer = new Minimizer();
 
 			for (String arg : args) {
 				minimizer.minimize(arg);
@@ -37,13 +37,7 @@ public class QuineMcCluskey {
 		Set<Integer> indexes = new HashSet<Integer>(f.getMinTermIndexes());
 		Partitions solutions = new Partitions();
 
-		// collect all terms
-		List<MinTerm> allTerms = new ArrayList<MinTerm>();
-
-		for (MinTermList partition : partitions) {
-			allTerms.addAll(partition.getMinTerms());
-		}
-
+		List<MinTerm> allTerms = new ArrayList<MinTerm>(partitions.flatten());
 		boolean[] selectors = new boolean[allTerms.size()];
 
 		while (true) {
@@ -63,22 +57,29 @@ public class QuineMcCluskey {
 				solutions.add(terms);
 			}
 
-			// advance
+			// TODO: make this into an iterator
+			// increment the selector, with carries
 			int i;
+			
 			for (i = 0; i < selectors.length; i++) {
 				if (selectors[i] == false) {
+					// no carry, so we can stop
 					selectors[i] = true;
 					break;
 				} else {
+					// carry, so propagate that
 					selectors[i] = false;
 				}
 			}
 
+			// if 'i' is the length of the selector list, then we wrapped all
+			// the way around and are done
 			if (i == selectors.length) {
 				break;
 			}
 		}
 
+		// sort so shortest (best) solutions are at the front of the list
 		solutions.sort();
 
 		return solutions;
