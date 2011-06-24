@@ -208,20 +208,22 @@ public class QuineMcCluskey {
 		List<String> primeImplicants = getPrimeImplicants(partitions);
 		List<List<MinTerm>> solutions = getEssentialPrimeImplicants(f, partitions);
 
-		List<MinTerm> solution = solutions.get(0);
-		List<String> essentialPrimeImplicants = new ArrayList<String>();
-		for (MinTerm term : solution) {
-			essentialPrimeImplicants.add(Util.join("", term.getBits()));
-		}
-		Collections.sort(essentialPrimeImplicants, implicantComparator);
-
 		printSection("Function", f.toString());
 		printSection("Prime Implicants", Util.join(", ", primeImplicants));
 		System.out.println();
 		System.out.println("Essential Prime Implicants");
 		System.out.println("==========================");
 		printPartitions(solutions);
-		printSection("Minimized Function", getMinimizedFunction(f, essentialPrimeImplicants));
+
+		if (solutions != null && solutions.size() > 0) {
+			List<MinTerm> solution = solutions.get(0);
+			List<String> essentialPrimeImplicants = new ArrayList<String>();
+			for (MinTerm term : solution) {
+				essentialPrimeImplicants.add(Util.join("", term.getBits()));
+			}
+			Collections.sort(essentialPrimeImplicants, implicantComparator);
+			printSection("Minimized Function", getMinimizedFunction(f, essentialPrimeImplicants));
+		}
 	}
 
 	/**
