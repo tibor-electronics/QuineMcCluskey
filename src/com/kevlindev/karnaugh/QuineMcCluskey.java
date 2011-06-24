@@ -13,6 +13,19 @@ import java.util.Set;
 
 public class QuineMcCluskey {
 
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		if (args != null && args.length > 0) {
+			QuineMcCluskey minimizer = new QuineMcCluskey();
+
+			for (String arg : args) {
+				minimizer.minimize(arg);
+			}
+		}
+	}
+
 	private Comparator<String> implicantComparator = new Comparator<String>() {
 		@Override
 		public int compare(String arg0, String arg1) {
@@ -41,17 +54,14 @@ public class QuineMcCluskey {
 		}
 	};
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		if (args != null && args.length > 0) {
-			QuineMcCluskey minimizer = new QuineMcCluskey();
+	private Set<MinTerm> flattenPartitions(List<List<MinTerm>> partitions) {
+		Set<MinTerm> result = new HashSet<MinTerm>();
 
-			for (String arg : args) {
-				minimizer.minimize(arg);
-			}
+		for (List<MinTerm> partition : partitions) {
+			result.addAll(partition);
 		}
+
+		return result;
 	}
 
 	private List<List<MinTerm>> getEssentialPrimeImplicants(Function f, List<List<MinTerm>> partitions) {
@@ -223,6 +233,8 @@ public class QuineMcCluskey {
 			}
 			Collections.sort(essentialPrimeImplicants, implicantComparator);
 			printSection("Minimized Function", getMinimizedFunction(f, essentialPrimeImplicants));
+		} else {
+			System.out.println("No solution found. This most likely indicates an error condition in this application.");
 		}
 	}
 
@@ -322,32 +334,26 @@ public class QuineMcCluskey {
 	 */
 	private List<List<MinTerm>> reducePartitions(List<List<MinTerm>> partitions) {
 		Set<MinTerm> result = new HashSet<MinTerm>();
-		List<MinTerm> usedMinTerms = new ArrayList<MinTerm>();
+		Set<MinTerm> remainingMinTerms = flattenPartitions(partitions);
 
 		for (int i = 0; i < partitions.size() - 1; i++) {
 			List<MinTerm> currentPartition = partitions.get(i);
 			List<MinTerm> nextPartition = partitions.get(i + 1);
 
 			for (MinTerm term1 : currentPartition) {
-				boolean used = false;
-
 				for (MinTerm term2 : nextPartition) {
 					MinTerm merged = term1.merge(term2);
 
 					if (merged != null) {
-						used = true;
 						result.add(merged);
-						usedMinTerms.add(term2);
+						remainingMinTerms.remove(term1);
+						remainingMinTerms.remove(term2);
 					}
-				}
-
-				if (used == false) {
-					result.add(term1);
 				}
 			}
 		}
 
-		result.removeAll(usedMinTerms);
+		result.addAll(remainingMinTerms);
 
 		return Util.partitionMinTerms(partitions.size() - 1, result);
 	}
