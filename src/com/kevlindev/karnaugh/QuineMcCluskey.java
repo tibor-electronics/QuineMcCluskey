@@ -13,6 +13,34 @@ import java.util.Set;
 
 public class QuineMcCluskey {
 
+	private Comparator<String> implicantComparator = new Comparator<String>() {
+		@Override
+		public int compare(String arg0, String arg1) {
+			int result = 0;
+
+			for (int i = 0; i < arg0.length(); i++) {
+				char c1 = arg0.charAt(i);
+				char c2 = arg1.charAt(i);
+
+				if (c1 != c2) {
+					// do nothing
+					if (c1 == '-') {
+						result = 1;
+					} else if (c2 == '-') {
+						result = -1;
+					} else if (c1 == '0') {
+						result = -1;
+					} else if (c2 == '1') {
+						result = 1;
+					}
+					break;
+				}
+			}
+
+			return result;
+		}
+	};
+
 	/**
 	 * @param args
 	 */
@@ -24,6 +52,79 @@ public class QuineMcCluskey {
 				minimizer.minimize(arg);
 			}
 		}
+	}
+
+	private List<List<MinTerm>> getEssentialPrimeImplicants(Function f, List<List<MinTerm>> partitions) {
+		Set<Integer> indexes = new HashSet<Integer>(f.getMinTermIndexes());
+		List<List<MinTerm>> solutions = new ArrayList<List<MinTerm>>();
+
+		// collect all terms
+		List<MinTerm> allTerms = new ArrayList<MinTerm>();
+
+		for (List<MinTerm> terms : partitions) {
+			allTerms.addAll(terms);
+		}
+
+		boolean[] selectors = new boolean[allTerms.size()];
+
+		while (true) {
+			Set<Integer> candidate = new HashSet<Integer>();
+			List<MinTerm> terms = new ArrayList<MinTerm>();
+
+			for (int i = 0; i < selectors.length; i++) {
+				if (selectors[i]) {
+					terms.add(allTerms.get(i));
+					candidate.addAll(allTerms.get(i).getIndexes());
+				}
+			}
+
+			if (candidate.equals(indexes)) {
+				// TODO: keep track of best solution instead of collecting all
+				// solutions
+				solutions.add(terms);
+			}
+
+			// advance
+			int i;
+			for (i = 0; i < selectors.length; i++) {
+				if (selectors[i] == false) {
+					selectors[i] = true;
+					break;
+				} else {
+					selectors[i] = false;
+				}
+			}
+
+			if (i == selectors.length) {
+				break;
+			}
+		}
+
+		Collections.sort(solutions, new Comparator<List<MinTerm>>() {
+			@Override
+			public int compare(List<MinTerm> arg0, List<MinTerm> arg1) {
+				int result = arg0.size() - arg1.size();
+
+				if (result == 0) {
+					int indexCount0 = 0;
+					int indexCount1 = 0;
+
+					for (MinTerm term : arg0) {
+						indexCount0 += term.getIndexes().size();
+					}
+
+					for (MinTerm term : arg1) {
+						indexCount1 += term.getIndexes().size();
+					}
+
+					result = indexCount0 - indexCount1;
+				}
+
+				return result;
+			}
+		});
+
+		return solutions;
 	}
 
 	/**
@@ -76,33 +177,7 @@ public class QuineMcCluskey {
 		}
 
 		ArrayList<String> primeImplicants = new ArrayList<String>(primeImplicantSet);
-		Collections.sort(primeImplicants, new Comparator<String>() {
-			@Override
-			public int compare(String arg0, String arg1) {
-				int result = 0;
-
-				for (int i = 0; i < arg0.length(); i++) {
-					char c1 = arg0.charAt(i);
-					char c2 = arg1.charAt(i);
-
-					if (c1 != c2) {
-						// do nothing
-						if (c1 == '-') {
-							result = 1;
-						} else if (c2 == '-') {
-							result = -1;
-						} else if (c1 == '0') {
-							result = -1;
-						} else if (c2 == '1') {
-							result = 1;
-						}
-						break;
-					}
-				}
-
-				return result;
-			}
-		});
+		Collections.sort(primeImplicants, implicantComparator);
 
 		return primeImplicants;
 	}
@@ -131,11 +206,22 @@ public class QuineMcCluskey {
 		}
 
 		List<String> primeImplicants = getPrimeImplicants(partitions);
+		List<List<MinTerm>> solutions = getEssentialPrimeImplicants(f, partitions);
+
+		List<MinTerm> solution = solutions.get(0);
+		List<String> essentialPrimeImplicants = new ArrayList<String>();
+		for (MinTerm term : solution) {
+			essentialPrimeImplicants.add(Util.join("", term.getBits()));
+		}
+		Collections.sort(essentialPrimeImplicants, implicantComparator);
 
 		printSection("Function", f.toString());
 		printSection("Prime Implicants", Util.join(", ", primeImplicants));
-		printSection("Essential Prime Implicants", "not yet supported");
-		printSection("Minimized Function", getMinimizedFunction(f, primeImplicants));
+		System.out.println();
+		System.out.println("Essential Prime Implicants");
+		System.out.println("==========================");
+		printPartitions(solutions);
+		printSection("Minimized Function", getMinimizedFunction(f, essentialPrimeImplicants));
 	}
 
 	/**
@@ -170,7 +256,7 @@ public class QuineMcCluskey {
 		System.out.println(Util.repeat("=", header.length()));
 		System.out.println(content);
 	}
-	
+
 	/**
 	 * readFile
 	 * 
@@ -233,7 +319,7 @@ public class QuineMcCluskey {
 	 * @return
 	 */
 	private List<List<MinTerm>> reducePartitions(List<List<MinTerm>> partitions) {
-		List<MinTerm> result = new ArrayList<MinTerm>();
+		Set<MinTerm> result = new HashSet<MinTerm>();
 		List<MinTerm> usedMinTerms = new ArrayList<MinTerm>();
 
 		for (int i = 0; i < partitions.size() - 1; i++) {
