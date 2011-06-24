@@ -2,6 +2,7 @@ package com.kevlindev.karnaugh;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class Util {
@@ -36,7 +37,7 @@ public class Util {
 		return buffer.toString();
 	}
 
-	public static List<List<MinTerm>> partitionMinTerms(int bits, List<MinTerm> minterms) {
+	public static List<List<MinTerm>> partitionMinTerms(int bits, Collection<MinTerm> minterms) {
 		List<List<MinTerm>> result = new ArrayList<List<MinTerm>>();
 
 		for (int i = 0; i <= bits; i++) {
