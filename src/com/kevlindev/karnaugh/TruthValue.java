@@ -1,7 +1,7 @@
 package com.kevlindev.karnaugh;
 
 public enum TruthValue {
-	FALSE("0"), TRUE("1"), UNDEFINED("-");
+	UNDEFINED("-"), FALSE("0"), TRUE("1");
 
 	private String text;
 
