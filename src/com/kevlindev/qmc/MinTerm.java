@@ -6,19 +6,19 @@ import java.util.List;
 
 public class MinTerm {
 	private List<Integer> indexes = new ArrayList<Integer>();
-	private List<TruthValue> bits = new ArrayList<TruthValue>();
+	private List<BitValue> bits = new ArrayList<BitValue>();
 
 	public MinTerm(int totalBits, int index) {
 		this.indexes.add(index);
 
 		for (int mask = 1 << (totalBits - 1); mask != 0; mask >>= 1) {
-			TruthValue value = ((index & mask) == mask) ? TruthValue.TRUE : TruthValue.FALSE;
+			BitValue value = ((index & mask) == mask) ? BitValue.TRUE : BitValue.FALSE;
 
 			this.bits.add(value);
 		}
 	}
 
-	private MinTerm(List<Integer> indexes, List<TruthValue> bits) {
+	private MinTerm(List<Integer> indexes, List<BitValue> bits) {
 		this.indexes = indexes;
 		this.bits = bits;
 	}
@@ -61,8 +61,8 @@ public class MinTerm {
 	public int getBitCount() {
 		int count = 0;
 
-		for (TruthValue value : bits) {
-			if (value == TruthValue.TRUE) {
+		for (BitValue value : bits) {
+			if (value == BitValue.TRUE) {
 				count++;
 			}
 		}
@@ -70,7 +70,7 @@ public class MinTerm {
 		return count;
 	}
 
-	public List<TruthValue> getBits() {
+	public List<BitValue> getBits() {
 		return bits;
 	}
 
@@ -81,7 +81,7 @@ public class MinTerm {
 	public MinTerm merge(MinTerm term) {
 		MinTerm result = null;
 		int count = 0;
-		List<TruthValue> mergedBits = new ArrayList<TruthValue>();
+		List<BitValue> mergedBits = new ArrayList<BitValue>();
 
 		for (int i = 0; i < bits.size(); i++) {
 			if (bits.get(i) != term.bits.get(i)) {
@@ -91,7 +91,7 @@ public class MinTerm {
 					break;
 				}
 
-				mergedBits.add(TruthValue.UNDEFINED);
+				mergedBits.add(BitValue.UNDEFINED);
 			} else {
 				mergedBits.add(bits.get(i));
 			}

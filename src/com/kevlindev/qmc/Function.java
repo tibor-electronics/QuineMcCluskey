@@ -74,11 +74,11 @@ public class Function extends MinTermList {
 	 * 
 	 * @param values
 	 */
-	public void setValues(List<TruthValue> values) {
+	public void setValues(List<BitValue> values) {
 		int index = 0;
 
-		for (TruthValue value : values) {
-			if (value == TruthValue.TRUE) {
+		for (BitValue value : values) {
+			if (value == BitValue.TRUE) {
 				this.add(new MinTerm(bits, index));
 			}
 
@@ -99,10 +99,10 @@ public class Function extends MinTermList {
 
 		for (MinTerm term : terms) {
 			List<String> sums = new ArrayList<String>();
-			List<TruthValue> values = term.getBits();
+			List<BitValue> values = term.getBits();
 
 			for (int i = 0; i < values.size(); i++) {
-				TruthValue value = values.get(i);
+				BitValue value = values.get(i);
 				String argument = arguments.get(i);
 
 				switch (value) {

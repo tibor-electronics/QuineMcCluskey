@@ -1,6 +1,6 @@
 package com.kevlindev.qmc;
 
-public enum TruthValue {
+public enum BitValue {
 	UNDEFINED("-"), FALSE("0"), TRUE("1");
 
 	private String text;
@@ -10,7 +10,7 @@ public enum TruthValue {
 	 * 
 	 * @param value
 	 */
-	private TruthValue(String text) {
+	private BitValue(String text) {
 		this.text = text;
 	}
 

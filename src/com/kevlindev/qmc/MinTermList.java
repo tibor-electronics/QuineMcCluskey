@@ -92,8 +92,8 @@ public class MinTermList implements Iterable<MinTerm> {
 		Collections.sort(minterms, new Comparator<MinTerm>() {
 			@Override
 			public int compare(MinTerm arg0, MinTerm arg1) {
-				List<TruthValue> bits0 = arg0.getBits();
-				List<TruthValue> bits1 = arg1.getBits();
+				List<BitValue> bits0 = arg0.getBits();
+				List<BitValue> bits1 = arg1.getBits();
 				int result = 0;
 
 				for (int i = 0; i < bits0.size(); i++) {

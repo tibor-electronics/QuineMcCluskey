@@ -163,10 +163,10 @@ public class Minimizer {
 					if (lparen != -1 && rparen != -1) {
 						String name = function.substring(0, lparen).trim();
 						String[] args = function.substring(lparen + 1, rparen).split("\\s*,\\s*");
-						List<TruthValue> values = new ArrayList<TruthValue>();
+						List<BitValue> values = new ArrayList<BitValue>();
 
 						for (String valueString : parts[1].split("\\s*,\\s*")) {
-							values.add("1".equals(valueString) ? TruthValue.TRUE : TruthValue.FALSE);
+							values.add("1".equals(valueString) ? BitValue.TRUE : BitValue.FALSE);
 						}
 
 						int bits = (int) Math.ceil(Math.log(values.size()) / Math.log(2));
