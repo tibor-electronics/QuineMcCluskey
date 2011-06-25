@@ -1,7 +1,12 @@
 package com.kevlindev.qmc;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class Function extends MinTermList {
 	private String name;
@@ -16,6 +21,55 @@ public class Function extends MinTermList {
 	public Function(String name, int bits) {
 		this.name = name;
 		this.bits = bits;
+	}
+
+	public static Function fromFile(File file) {
+		Scanner scanner = null;
+		Function f = null;
+
+		try {
+			scanner = new Scanner(new FileInputStream(file), "utf-8");
+
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				String[] parts = line.split("\\s*=\\s*");
+				boolean valid = false;
+
+				if (parts.length == 2) {
+					String function = parts[0];
+					int lparen = function.indexOf('(');
+					int rparen = function.indexOf(')');
+
+					if (lparen != -1 && rparen != -1) {
+						String name = function.substring(0, lparen).trim();
+						String[] args = function.substring(lparen + 1, rparen).split("\\s*,\\s*");
+						List<BitValue> values = new ArrayList<BitValue>();
+
+						for (String valueString : parts[1].split("\\s*,\\s*")) {
+							values.add("1".equals(valueString) ? BitValue.TRUE : BitValue.FALSE);
+						}
+
+						int bits = (int) Math.ceil(Math.log(values.size()) / Math.log(2));
+
+						f = new Function(name, bits);
+						f.setArguments(Arrays.asList(args));
+						f.setValues(values);
+
+						valid = true;
+					}
+				}
+
+				if (valid == false) {
+					System.err.println("Invalid content: " + line);
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			scanner.close();
+		}
+
+		return f;
 	}
 
 	/**

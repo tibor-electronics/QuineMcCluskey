@@ -1,12 +1,9 @@
 package com.kevlindev.qmc;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 
 public class Minimizer {
@@ -71,9 +68,11 @@ public class Minimizer {
 	 * @param file
 	 */
 	public void minimize(String file) {
+		// TODO: check for existence and readability
 		// load the function from the specified file
-		Function f = readFile(file);
+		Function f = Function.fromFile(new File(file));
 
+		// TODO: move this method to Function
 		// partition the minterms, grouped by 1-bit counts
 		Partitions partitions = Util.partitionMinTerms(f.getBits(), f.getMinTerms());
 
@@ -102,61 +101,6 @@ public class Minimizer {
 		} else {
 			System.out.println("No solution was found, most likely indicating a fault in this application.");
 		}
-	}
-
-	/**
-	 * readFile
-	 * 
-	 * @param file
-	 * @return
-	 */
-	public Function readFile(String file) {
-		Scanner scanner = null;
-		Function f = null;
-
-		try {
-			scanner = new Scanner(new FileInputStream(file), "utf-8");
-
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				String[] parts = line.split("\\s*=\\s*");
-				boolean valid = false;
-
-				if (parts.length == 2) {
-					String function = parts[0];
-					int lparen = function.indexOf('(');
-					int rparen = function.indexOf(')');
-
-					if (lparen != -1 && rparen != -1) {
-						String name = function.substring(0, lparen).trim();
-						String[] args = function.substring(lparen + 1, rparen).split("\\s*,\\s*");
-						List<BitValue> values = new ArrayList<BitValue>();
-
-						for (String valueString : parts[1].split("\\s*,\\s*")) {
-							values.add("1".equals(valueString) ? BitValue.TRUE : BitValue.FALSE);
-						}
-
-						int bits = (int) Math.ceil(Math.log(values.size()) / Math.log(2));
-
-						f = new Function(name, bits);
-						f.setArguments(Arrays.asList(args));
-						f.setValues(values);
-
-						valid = true;
-					}
-				}
-
-				if (valid == false) {
-					System.err.println("Invalid content: " + line);
-				}
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} finally {
-			scanner.close();
-		}
-
-		return f;
 	}
 
 	/**
