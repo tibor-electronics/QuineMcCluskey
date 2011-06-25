@@ -1,1 +1,41 @@
-This is a quick implementation of QuineMcCluskey which is used to minimize terms in a boolean function. The current state of this code is in desparate need of refactoring, but it does what I need for now :)
+This is a quick implementation of QuineMcCluskey used to minimize terms in a
+boolean function. This is by no means an efficient implementation, but it's
+working great for my needs, so I put this up in case it's useful to others.
+
+Input into the tool is pretty lame right now and I hope to improve that
+soonish. Create a file with a single line. That line should roughly be in the
+form:
+
+	identifier '(' identifier (',' identifier)* ')' '=' ('0' | '1')*
+
+Example:
+
+	f(a,b,c) = 0, 1, 0, 1, 0, 0, 1, 1
+
+Note that the total number of zeros and ones should equal two raised to the
+number of parameters in the parameter list. Above we have 3 parameters. 2^3 =
+8, so we need 8 0's and 1's.
+
+Note that the current implementation is very forgiving, so when you see
+"identifier" this really can be any string of text without spaces. This allows
+you to do things like the following:
+
+    f(a[0],a[1],a[2]) = ...
+
+This is useful when you are using the output as VHDL/Verilog source.
+
+When you run the tool against a file, it will a simple assignment to the
+function number with a minimized version of the function after substituting in
+the parameter list.
+
+TODO
+====
+- Use a real parser or at least something a little more robust.
+  - I'd like to allow input using sum-of-minterms as well. For example, the
+    above example could be expressed as: f(a,b,c) = ∑(1,2,6,7)
+- Improve the currently brute-force calculation of the essential prime
+  implicants
+- Add an SWT-based GUI front-end, while still allowing the tool to run from the
+  command-line
+- Add options to emit Verilog and/or VHDL
+
