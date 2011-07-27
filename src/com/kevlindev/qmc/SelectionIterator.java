@@ -1,3 +1,7 @@
+/**
+ * Copyright 2011, Kevin Lindsey
+ * See LICENSE file for licensing information
+ */
 package com.kevlindev.qmc;
 
 import java.util.Iterator;
